@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     },
     fullName: {
       type: String,
-      required: true,
+      // required: true,
     },
     bio: {
       type: String,

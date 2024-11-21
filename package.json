@@ -11,6 +11,8 @@
   "license": "ISC",
   "description": "This repository contains a fully functional **Social Media REST API** built with **Node.js**, **Express.js**, and **MongoDB**. It supports core social media functionalities, from basic CRUD operations to advanced features like user authentication, story uploads, messaging, and more.",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
