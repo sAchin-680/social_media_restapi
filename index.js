@@ -3,7 +3,7 @@ require('express-async-errors');
 
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
-
+const cookieParser = require('cookie-parser');
 const autthRoute = require('./routes/auth');
 
 dotenv.config();
@@ -11,6 +11,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/auth', autthRoute);
 
 connectDB();

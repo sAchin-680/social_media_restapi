@@ -29,42 +29,68 @@ router.post('/register', async (req, res) => {
 });
 
 // Login
-router.post('/login', async (req, res) => {
+// router.post('/login', async (req, res) => {
+//   try {
+//     let user;
+
+//     if (req.body.email) {
+//       user = await User.findOne({ email: req.body.email });
+//     } else {
+//       user = await User.findOne({ username: req.body.username });
+//     }
+
+//     if (!user) {
+//       res.status(404).json('User not found');
+//     }
+
+//     const match = await bcrypt.compare(req.body.password, user.password);
+
+//     if (!match) {
+//       res.status(401).json('Wrong Credentials');
+//       const { password, ...data } = user.doc;
+//       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//         expiresIn: '24h',
+//         res.cookie('token', token).status(200).json(data),
+//       });
+
+//       res.status(200).json(user);
+//     }
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).json('Server error');
+//   }
+// });
+
+// Logout
+router.get('/logout', async (req, res) => {
   try {
-    let user;
-
-    if (req.body.email) {
-      user = await User.findOne({ email: req.body.email });
-    } else {
-      user = await User.findOne({ username: req.body.username });
-    }
-
-    if (!user) {
-      res.status(404).json('User not found');
-    }
-
-    const match = await bcrypt.compare(req.body.password, user.password);
-
-    if (!match) {
-      res.status(401).json('Wrong Credentials');
-      const { password, ...data } = user.doc;
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '24h',
-        res.cookie('token', token).status(200).json(data),
-      });
-
-      res.status(200).json(user);
-    }
+    res
+      .clearCookie('token', { sameSite: 'none', secure: true })
+      .status(200)
+      .json('Logged out');
   } catch (error) {
     console.error(error.message);
     res.status(500).json('Server error');
   }
 });
 
-// Logout
-
 // Get current user
-
+router.get('/refetch', async (req, res) => {
+  const token = req.cookies.token;
+  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+    if (err) {
+      return res.status(404).json('Unauthorized');
+    }
+    try {
+      const id = data.id;
+      const user = await User.findByOne({ _id: id });
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json('Server error');
+    }
+  });
+});
 // Update user
 
 // Delete user
