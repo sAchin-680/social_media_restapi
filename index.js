@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 
 const connectDB = require('./config/db');
 const dotenv = require('dotenv');
