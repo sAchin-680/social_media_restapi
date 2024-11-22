@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const authRoute = require('./routes/auth');
 const userRoute = require('./routes/users');
+const path = require('path');
 
 // Middlwares
 const { errorHandler } = require('./middlewares/error');
@@ -15,7 +16,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(errorHandler);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));app.use(errorHandler);
 
 connectDB();
 
