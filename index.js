@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const authRoute = require('./routes/auth');
+const userRoute = require('./routes/users');
 
 // Middlwares
 const { errorHandler } = require('./middlewares/error');
@@ -18,6 +19,7 @@ app.use(errorHandler);
 
 connectDB();
 
+app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
 
 const PORT = 5000;

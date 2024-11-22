@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { CustomError, errorHandler } = require('../middlewares/error');
 
 const registerController = async (req, res, next) => {
   try {
@@ -78,21 +79,25 @@ const logoutController = async (req, res, next) => {
 const currentUserController = async (req, res, next) => {
   const token = req.cookies.token;
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
-    if (err) {
-      throw new CustomError('Unauthorized', 401);
+  const data = await jwt.verify(
+    token,
+    process.env.JWT_SECRET,
+    async (err, data) => {
+      if (err) {
+        throw new CustomError('User not found', 404);
+      }
+
+      try {
+        const id = data.id;
+
+        const user = await User.findByOne({ _id: id });
+
+        res.status(200).json(user);
+      } catch (error) {
+        next(error);
+      }
     }
-
-    try {
-      const id = data.id;
-
-      const user = await User.findByOne({ _id: id });
-
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  });
+  );
 };
 
 const updateController = async (req, res, next) => {
@@ -109,6 +114,7 @@ const updateController = async (req, res, next) => {
 
       const updatedUser = await User.findByIdAndUpdate(
         userId,
+        updateData,
         { userName, email, fullName, bio },
         { new: true }
       );
