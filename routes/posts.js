@@ -9,7 +9,7 @@ const {
   getUserPostsController,
   deletePostController,
   likePostController,
-  dislikePostController
+  dislikePostController,
 } = require('../controllers/postController');
 
 // CREATE POST

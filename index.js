@@ -7,6 +7,7 @@ const authRoute = require('./routes/auth');
 const userRoute = require('./routes/users');
 const path = require('path');
 const postRoute = require('./routes/posts');
+const commentRoute = require('./routes/comments');
 
 // Middlwares
 const { errorHandler } = require('./middlewares/error');
@@ -26,6 +27,7 @@ connectDB();
 app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/posts', postRoute);
+app.use('/api/comments', commentRoute);
 
 const PORT = 5000;
 app.listen(PORT, () => {
