@@ -8,6 +8,7 @@ const {
   getAllPostsController,
   getUserPostsController,
   deletePostController,
+  likePostController,
 } = require('../controllers/postController');
 
 // CREATE POST
@@ -32,4 +33,6 @@ router.get('/user/:userId', getUserPostsController);
 // DELETE POST
 router.delete('/delete/:postId', deletePostController);
 
+// LIKE POST
+router.post('/like/:postId', likePostController);
 module.exports = router;

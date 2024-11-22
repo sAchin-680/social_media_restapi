@@ -90,11 +90,12 @@ const updatePostController = async (req, res, next) => {
     next(error);
   }
 };
-
 const getAllPostsController = async (req, res, next) => {
   const { userId } = req.params;
+
   try {
     const user = await User.findById(userId).populate('posts');
+
     if (!user) {
       throw new CustomError('User not found', 404);
     }
@@ -119,8 +120,10 @@ const getAllPostsController = async (req, res, next) => {
 
 const getUserPostsController = async (req, res, next) => {
   const { userId } = req.params;
+
   try {
     const user = await User.findById(userId).populate('posts');
+
     if (!user) {
       throw new CustomError('User not found', 404);
     }
@@ -138,17 +141,20 @@ const getUserPostsController = async (req, res, next) => {
 
 const deletePostController = async (req, res, next) => {
   const { postId } = req.params;
+
   try {
     const postToDelete = await Post.findById(postId);
 
     if (!postToDelete) {
       throw new CustomError('Post not found', 404);
     }
+
     const user = await User.findById(postToDelete.user);
 
     if (!user) {
       throw new CustomError('User not found', 404);
     }
+
     user.posts = user.posts.filter(
       (postId) => postId !== postToDelete._id.toString()
     );
@@ -161,6 +167,41 @@ const deletePostController = async (req, res, next) => {
     next(error);
   }
 };
+
+const likePostController = async (req, res, next) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      throw new CustomError('Post not found', 404);
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+
+    if (post.likes.includes(userId)) {
+      post.likes = post.likes.filter((id) => id !== userId);
+    } else {
+      post.likes.push(userId);
+    }
+
+    await post.save();
+
+    res.status(200).json({
+      message: 'Post liked successfully',
+      post,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createPostController,
   createPostWithImagesController,
@@ -168,4 +209,5 @@ module.exports = {
   getAllPostsController,
   getUserPostsController,
   deletePostController,
+  likePostController,
 };
