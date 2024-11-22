@@ -6,6 +6,8 @@ const {
   unfollowUserController,
   blockUserController,
   unblockUserController,
+  getBlockedUsersController,
+  deleteUserController,
 } = require('../controllers/UserController');
 
 const router = express.Router();
@@ -28,4 +30,9 @@ router.post('/block/:userID', blockUserController);
 // UNBLOCK USER
 router.post('/unblock/:userID', unblockUserController);
 
+// GET BLOCKED USERS
+router.get('/blocked-users', getBlockedUsersController);
+
+// DELETE USER
+router.delete('/:userID', deleteUserController);
 module.exports = router;
