@@ -75,37 +75,98 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout
-// router.get('/logout', async (req, res) => {
-//   try {
-//     res
-//       .clearCookie('token', { sameSite: 'none', secure: true })
-//       .status(200)
-//       .json('Logged out');
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).json('Server error');
-//   }
-// });
+router.get('/logout', async (req, res) => {
+  try {
+    res
+      .clearCookie('token', { sameSite: 'none', secure: true })
+      .status(200)
+      .json('Logged out');
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json('Server error');
+  }
+});
 
 // Get current user
-// router.get('/refetch', async (req, res) => {
-//   const token = req.cookies.token;
-//   jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
-//     if (err) {
-//       return res.status(404).json('Unauthorized');
-//     }
-//     try {
-//       const id = data.id;
-//       const user = await User.findByOne({ _id: id });
-//       res.status(200).json(user);
-//     } catch (error) {
-//       console.error(error.message);
-//       res.status(500).json('Server error');
-//     }
-//   });
-// });
+router.get('/refetch', async (req, res) => {
+  const token = req.cookies.token;
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+    // console.log(data);
+    if (err) {
+      return res.status(404).json('Unauthorized');
+    }
+
+    try {
+      const id = data.id;
+
+      const user = await User.findByOne({ _id: id });
+      //   if (!user) {
+      //     return res.status(404).json('User not found');
+      //   }
+
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json('Server error');
+    }
+  });
+});
+
 // Update user
+router.put('/update', async (req, res) => {
+  const token = req.cookies.token;
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+    if (err) {
+      return res.status(401).json('Unauthorized');
+    }
+
+    try {
+      const { userName, email, fullName, bio } = req.body;
+      const userId = data.id;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { userName, email, fullName, bio },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json('User not found');
+      }
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json('Server error');
+    }
+  });
+});
 
 // Delete user
+router.delete('/delete', async (req, res) => {
+  const token = req.cookies.token;
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+    if (err) {
+      return res.status(404).json('Unauthorized');
+    }
+
+    try {
+      const userId = data.id;
+      const deletedUser = await User.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json('User not found');
+      }
+
+      res.status(200).json('User deleted successfully');
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json('Server error');
+    }
+  });
+});
 
 module.exports = router;
