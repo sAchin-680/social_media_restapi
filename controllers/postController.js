@@ -202,6 +202,40 @@ const likePostController = async (req, res, next) => {
   }
 };
 
+const dislikePostController = async (req, res, next) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      throw new CustomError('Post not found', 404);
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+
+    if (post.dislikes.includes(userId)) {
+      throw new CustomError('Post already disliked', 400);
+    }
+
+    post.likes = post.likes.filter((id) => id !== userId);
+
+    await post.save();
+
+    res.status(200).json({
+      message: 'Post disliked successfully',
+      post,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createPostController,
   createPostWithImagesController,
@@ -210,4 +244,5 @@ module.exports = {
   getUserPostsController,
   deletePostController,
   likePostController,
+  dislikePostController,
 };
