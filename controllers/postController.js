@@ -87,33 +87,54 @@ const updatePostController = async (req, res, next) => {
 };
 
 const getAllPostsController = async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-      const user = await User.findById(userId).populate('posts');
-      if (!user) {
-        throw new CustomError('User not found', 404);
-      }
-  
-      const blocked = Array.isArray(user.blocked) ? user.blocked.map((id) => id.toString()) : [];
-  
-      const allPosts = await Post.find({ user: { $nin: blocked } }).populate(
-        'user',
-        'username fullName profilePicture'
-      );
-  
-      res.status(200).json({
-        message: 'All posts',
-        posts: allPosts, // Corrected response
-      });
-    } catch (error) {
-      next(error);
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId).populate('posts');
+    if (!user) {
+      throw new CustomError('User not found', 404);
     }
-  };
-  
+
+    const blocked = Array.isArray(user.blocked)
+      ? user.blocked.map((id) => id.toString())
+      : [];
+
+    const allPosts = await Post.find({ user: { $nin: blocked } }).populate(
+      'user',
+      'username fullName profilePicture'
+    );
+
+    res.status(200).json({
+      message: 'All posts',
+      posts: allPosts, // Corrected response
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserPostsController = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId).populate('posts');
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+
+    const userPosts = await Post.find({ user: userId });
+
+    res.status(200).json({
+      message: 'All posts',
+      posts: userPosts, // Corrected response
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createPostController,
   createPostWithImagesController,
   updatePostController,
   getAllPostsController,
+  getUserPostsController,
 };
