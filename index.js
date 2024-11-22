@@ -5,12 +5,16 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const authRoute = require('./routes/auth');
 
+// Middlwares
+const { errorHandler } = require('./middlewares/error');
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(errorHandler);
 
 connectDB();
 

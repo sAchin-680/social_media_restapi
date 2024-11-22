@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const registerController = async (req, res) => {
+const registerController = async (req, res, next) => {
   try {
     const { userName, email, password, fullName, bio } = req.body;
 
@@ -15,7 +15,7 @@ const registerController = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json('User already exists');
+      throw new CustomError('User already exists', 400);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -32,27 +32,23 @@ const registerController = async (req, res) => {
 
     return res.status(201).json(savedUser);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message });
-    }
-
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 };
 
-const loginController = async (req, res) => {
+const loginController = async (req, res, next) => {
   try {
     const user = req.body.email
       ? await User.findOne({ email: req.body.email })
       : await User.findOne({ username: req.body.username });
 
     if (!user) {
-      return res.status(404).json('User not found');
+      throw new CustomError('User not found', 404);
     }
 
     const match = await bcrypt.compare(req.body.password, user.password);
     if (!match) {
-      return res.status(401).json('Wrong Credentials');
+      throw new CustomError('Invalid credentials', 400);
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -64,54 +60,47 @@ const loginController = async (req, res) => {
 
     res.cookie('token', token, { httpOnly: true }).status(200).json(data);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json('Server error');
+    next(error);
   }
 };
 
-const logoutController = async (req, res) => {
+const logoutController = async (req, res, next) => {
   try {
     res
       .clearCookie('token', { sameSite: 'none', secure: true })
       .status(200)
       .json('Logged out');
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json('Server error');
+    next(error);
   }
 };
 
-const currentUserController = async (req, res) => {
+const currentUserController = async (req, res, next) => {
   const token = req.cookies.token;
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
-    // console.log(data);
     if (err) {
-      return res.status(404).json('Unauthorized');
+      throw new CustomError('Unauthorized', 401);
     }
 
     try {
       const id = data.id;
 
       const user = await User.findByOne({ _id: id });
-      //   if (!user) {
-      //     return res.status(404).json('User not found');
-      //   }
 
       res.status(200).json(user);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json('Server error');
+      next(error);
     }
   });
 };
 
-const updateController = async (req, res) => {
+const updateController = async (req, res, next) => {
   const token = req.cookies.token;
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
     if (err) {
-      return res.status(401).json('Unauthorized');
+      throw new CustomError('Unauthorized', 401);
     }
 
     try {
@@ -130,18 +119,17 @@ const updateController = async (req, res) => {
 
       res.status(200).json(updatedUser);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json('Server error');
+      next(error);
     }
   });
 };
 
-const deleteController = async (req, res) => {
+const deleteController = async (req, res, next) => {
   const token = req.cookies.token;
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
     if (err) {
-      return res.status(404).json('Unauthorized');
+      throw new CustomError('Unauthorized', 401);
     }
 
     try {
@@ -154,8 +142,7 @@ const deleteController = async (req, res) => {
 
       res.status(200).json('User deleted successfully');
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json('Server error');
+      next(error);
     }
   });
 };
