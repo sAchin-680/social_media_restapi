@@ -65,4 +65,29 @@ const createPostWithImagesController = async (req, res, next) => {
   }
 };
 
-module.exports = { createPostController, createPostWithImagesController };
+const updatePostController = async (req, res, next) => {
+  const { postId } = req.params;
+  const { caption } = req.body;
+  try {
+    const postToUpdate = await Post.findById(postId);
+
+    if (!post) {
+      throw new CustomError('Post not found', 404);
+    }
+    postToUpdate.caption = caption || postToUpdate.caption;
+
+    await postToUpdate.save();
+    res.status(200).json({
+      message: 'Post updated successfully',
+      post: postToUpdate,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createPostController,
+  createPostWithImagesController,
+  updatePostController,
+};

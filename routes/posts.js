@@ -4,6 +4,7 @@ const upload = require('../middlewares/upload');
 const {
   createPostController,
   createPostWithImagesController,
+  updatePostController,
 } = require('../controllers/postController');
 
 // CREATE POST
@@ -15,5 +16,8 @@ router.post(
   upload.array('images', 5),
   createPostWithImagesController
 );
+
+// UPDATE POST
+router.put('/update/:postId', updatePostController);
 
 module.exports = router;
