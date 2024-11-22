@@ -11,7 +11,7 @@ const {
   deleteUserController,
   searchUsersController,
   uploadProfilePictureController,
-  uploadCoverProfilePictureController   ,
+  uploadCoverProfilePictureController,
 } = require('../controllers/UserController');
 
 const router = express.Router();
