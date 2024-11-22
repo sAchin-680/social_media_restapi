@@ -131,10 +131,36 @@ const getUserPostsController = async (req, res, next) => {
   }
 };
 
+const deletePostController = async (req, res, next) => {
+  const { postId } = req.params;
+  try {
+    const postToDelete = await Post.findById(postId);
+
+    if (!postToDelete) {
+      throw new CustomError('Post not found', 404);
+    }
+    const user = await User.findById(postToDelete.user);
+
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+    user.posts = user.posts.filter(
+      (postId) => postId !== postToDelete._id.toString()
+    );
+
+    await user.save();
+    await postToDelete.deleteOne();
+
+    res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   createPostController,
   createPostWithImagesController,
   updatePostController,
   getAllPostsController,
   getUserPostsController,
+  deletePostController,
 };
