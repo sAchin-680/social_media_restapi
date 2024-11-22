@@ -5,6 +5,7 @@ const {
   createPostController,
   createPostWithImagesController,
   updatePostController,
+  getAllPostsController,
 } = require('../controllers/postController');
 
 // CREATE POST
@@ -19,5 +20,8 @@ router.post(
 
 // UPDATE POST
 router.put('/update/:postId', updatePostController);
+
+// GET ALL POSTS
+router.get('/all/:userId', getAllPostsController);
 
 module.exports = router;
