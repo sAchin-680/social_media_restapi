@@ -1,4 +1,5 @@
 const express = require('express');
+const upload = require('../middlewares/upload');
 const {
   getUserController,
   updateUserController,
@@ -9,6 +10,7 @@ const {
   getBlockedUsersController,
   deleteUserController,
   searchUsersController,
+  uploadProfilePictureController,
 } = require('../controllers/UserController');
 
 const router = express.Router();
@@ -39,5 +41,12 @@ router.delete('/:userID', deleteUserController);
 
 // SEARCH USERS
 router.get('/search/:query', searchUsersController);
+
+// UPDATE PROFILE PICTURE
+router.put(
+  '/update-profile-picture/:userID',
+  upload.single('profilePicture'),
+  uploadProfilePictureController
+);
 
 module.exports = router;
