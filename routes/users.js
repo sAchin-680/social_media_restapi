@@ -8,6 +8,7 @@ const {
   unblockUserController,
   getBlockedUsersController,
   deleteUserController,
+  searchUsersController,
 } = require('../controllers/UserController');
 
 const router = express.Router();
@@ -35,4 +36,8 @@ router.get('/blocked-users', getBlockedUsersController);
 
 // DELETE USER
 router.delete('/:userID', deleteUserController);
+
+// SEARCH USERS
+router.get('/search/:query', searchUsersController);
+
 module.exports = router;

@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const post = require('../models/Post');
+const posts = require('../models/Posts');
 const Comment = require('../models/Comment');
 const Story = require('../models/Story');
 
@@ -206,54 +206,70 @@ const getBlockedUsersController = async (req, res, next) => {
 };
 
 const deleteUserController = async (req, res, next) => {
-    const { user_ID } = req.params;
-  
-    try {
-      const userToDelete = await User.findById(user_ID);
-  
-      if (!userToDelete) {
-        throw new CustomError('User not found', 404);
-      }
-  
-      await Post.deleteMany({ user: user_ID });
-      await Post.deleteMany({ 'comments.user': user_ID });
-      await Post.deleteMany({ 'comments.replies.user': user_ID });
-      await Comment.deleteMany({ user: user_ID });
-      await Story.deleteMany({ user: user_ID });
-      await Post.updateMany({ likes: user_ID }, { $pull: { likes: user_ID } });
-  
-      await User.updateMany(
-        { _id: { $in: userToDelete.following } },
-        { $pull: { followers: user_ID } }
-      );
-  
-      await Comment.updateMany({ user: user_ID }, { $pull: { user: user_ID } });
-      await Comment.updateMany(
-        { 'replies.user': user_ID },
-        { $pull: { 'replies.$.user': user_ID } }
-      );
-  
-      await Post.updateMany({}, { $pull: { likes: user_ID } });
-  
-      const replyComments = await Comment.find({ 'replies.user': user_ID });
-  
-      await Promise.all(
-        replyComments.map(async (comment) => {
-          comment.replies = comment.replies.filter(
-            (reply) => reply.user.toString() !== user_ID.toString()
-          );
-          await comment.save();
-        })
-      );
-  
-      await userToDelete.deleteOne();
-  
-      res.status(200).json({ message: 'User deleted' });
-    } catch (error) {
-      next(error);
+  const { user_ID } = req.params;
+
+  try {
+    const userToDelete = await User.findById(user_ID);
+
+    if (!userToDelete) {
+      throw new CustomError('User not found', 404);
     }
-  };
-  
+
+    await Post.deleteMany({ user: user_ID });
+    await Post.deleteMany({ 'comments.user': user_ID });
+    await Post.deleteMany({ 'comments.replies.user': user_ID });
+    await Comment.deleteMany({ user: user_ID });
+    await Story.deleteMany({ user: user_ID });
+    await Post.updateMany({ likes: user_ID }, { $pull: { likes: user_ID } });
+
+    await User.updateMany(
+      { _id: { $in: userToDelete.following } },
+      { $pull: { followers: user_ID } }
+    );
+
+    await Comment.updateMany({ user: user_ID }, { $pull: { user: user_ID } });
+    await Comment.updateMany(
+      { 'replies.user': user_ID },
+      { $pull: { 'replies.$.user': user_ID } }
+    );
+
+    await Post.updateMany({}, { $pull: { likes: user_ID } });
+
+    const replyComments = await Comment.find({ 'replies.user': user_ID });
+
+    await Promise.all(
+      replyComments.map(async (comment) => {
+        comment.replies = comment.replies.filter(
+          (reply) => reply.user.toString() !== user_ID.toString()
+        );
+        await comment.save();
+      })
+    );
+
+    await userToDelete.deleteOne();
+
+    res.status(200).json({ message: 'User deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const searchUsersController = async (req, res, next) => {
+  const { query } = req.params;
+
+  try {
+    const users = await User.find({
+      $or: [
+        { userName: { $regex: new RegExp(query, 'i') } },
+        { fullName: { $regex: new RegExp(query, 'i') } },
+      ],
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getUserController,
@@ -264,4 +280,5 @@ module.exports = {
   unblockUserController,
   getBlockedUsersController,
   deleteUserController,
+  searchUsersController,
 };
