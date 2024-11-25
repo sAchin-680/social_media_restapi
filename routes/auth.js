@@ -1,31 +1,22 @@
 const express = require('express');
 const {
   registerController,
-  currentUserController,
   loginController,
   logoutController,
-  updateController,
-  deleteController,
+  refetchUserController,
 } = require('../controllers/authController');
-
 const router = express.Router();
 
-// Register
+//REGISTER
 router.post('/register', registerController);
 
-// Login
+//LOGIN
 router.post('/login', loginController);
 
-// Logout
+//LOGOUT
 router.get('/logout', logoutController);
 
-// Get current user
-router.get('/refetch', currentUserController);
-
-// Update user
-router.put('/update', updateController);
-
-// Delete user
-router.delete('/delete', deleteController);
+//FETCH CURRENT USER
+router.get('/refetch', refetchUserController);
 
 module.exports = router;

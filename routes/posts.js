@@ -5,38 +5,39 @@ const {
   createPostController,
   createPostWithImagesController,
   updatePostController,
-  getAllPostsController,
+  getPostsController,
   getUserPostsController,
   deletePostController,
   likePostController,
   dislikePostController,
 } = require('../controllers/postController');
 
-// CREATE POST
+//CREATE POST
 router.post('/create', createPostController);
 
-// CREATE POST WITH IMAGES
+//CREATE POST WITH IMAGES
 router.post(
-  '/create-with-images',
+  '/create/:userId',
   upload.array('images', 5),
   createPostWithImagesController
 );
 
-// UPDATE POST
+//UPDATE POST
 router.put('/update/:postId', updatePostController);
 
-// GET ALL POSTS
-router.get('/all/:userId', getAllPostsController);
+//GET ALL POSTS
+router.get('/all/:userId', getPostsController);
 
-//  GET USER POSTS
+//GET USER POSTS
 router.get('/user/:userId', getUserPostsController);
 
-// DELETE POST
+//DELETE POST
 router.delete('/delete/:postId', deletePostController);
 
-// LIKE POST
+//LIKE POST
 router.post('/like/:postId', likePostController);
 
-// DISLIKES post
+//DISLIKE POST
 router.post('/dislike/:postId', dislikePostController);
+
 module.exports = router;
