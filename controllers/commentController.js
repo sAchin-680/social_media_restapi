@@ -1,7 +1,7 @@
 const { CustomError } = require('../middlewares/error');
 const Comment = require('../models/Comment');
-const Post = require('../models/Posts');
-const user = require('../models/User');
+const Post = require('../models/Post');
+const User = require('../models/User');
 
 const createCommentController = async (req, res, next) => {
   const { postId, userId, text } = req.body;
