@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Build project
+        run: npm run build  # Add this if you have a build step (adjust command based on your project)
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v2.0.0  # Add this step to attest build provenance
 
       - name: Add Render Remote
         run: git remote add render https://github.com/sAchin-680/social_media_restapi.git
