@@ -1,4 +1,4 @@
-const Post = require('../models/Posts');
+const Post = require('../models/Post');
 const User = require('../models/User');
 const { CustomError } = require('../middlewares/error');
 
