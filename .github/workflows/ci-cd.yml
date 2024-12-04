@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
@@ -26,4 +26,5 @@ jobs:
       - name: Deploy to Render
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: git push https://sAchin-680:${{ secrets.GITHUB_TOKEN }}@github.com/sAchin-680/social_media_restapi.git main
+        run: |
+          git push render main
