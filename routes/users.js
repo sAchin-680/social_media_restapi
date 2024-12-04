@@ -11,7 +11,7 @@ const {
   searchUserController,
   uploadProfilePictureController,
   uploadCoverPictureController,
-} = require('../controllers/userController');
+} = require('../controllers/UserController');
 const upload = require('../middlewares/upload');
 const router = express.Router();
 
