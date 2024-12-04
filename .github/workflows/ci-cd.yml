@@ -26,5 +26,4 @@ jobs:
       - name: Deploy to Render
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git push render main
+        run: git push https://sAchin-680:${{ secrets.GITHUB_TOKEN }}@github.com/sAchin-680/social_media_restapi.git main
